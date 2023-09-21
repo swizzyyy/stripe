@@ -83,6 +83,7 @@ class ProductController extends Controller
 
          $sessionId = $request->get('session_id');
 
+
          $used = Order::where('session_id',$sessionId)->where('user_id',Auth::id())->first();
 
          if($used->used == 1)
@@ -91,6 +92,11 @@ class ProductController extends Controller
          }
 
          $session = $this->setKey()->checkout->sessions->retrieve($sessionId);
+
+         if(!$session)
+         {
+             abort(404);
+         }
 
          $customer = $this->setKey()->customers->retrieve($session->customer);
 
@@ -103,11 +109,6 @@ class ProductController extends Controller
          }
 
           session()->flash('product');
-
-        if(!$session)
-        {
-            abort(404);
-        }
 
         $paymentIntentId = $session->payment_intent;
 
